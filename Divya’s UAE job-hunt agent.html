@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Divya’s UAE job-hunt agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF3F6; --surface:#FFFFFF; --ink:#102A43; --muted:#52677D; --line:#CAD6E0;
+  --gulf:#0B6E8A; --gulf-ink:#FFFFFF; --palm:#2F7D4E; --dune:#C9852B; --warn:#B4442F; --chip:#E1ECF2;
+  color-scheme: light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1A24; --surface:#152634; --ink:#E4EEF5; --muted:#9AB0C2; --line:#28404F;
+    --gulf:#3BA9C9; --gulf-ink:#06202A; --palm:#5DBB84; --dune:#E0A653; --warn:#E5806B; --chip:#1D3444;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1A24; --surface:#152634; --ink:#E4EEF5; --muted:#9AB0C2; --line:#28404F;
+  --gulf:#3BA9C9; --gulf-ink:#06202A; --palm:#5DBB84; --dune:#E0A653; --warn:#E5806B; --chip:#1D3444;
+  color-scheme: dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:940px;margin:0 auto;padding:28px 20px 64px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Instrument Sans",system-ui,sans-serif;line-height:1.15;margin:0}
+h1{font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:-.02em}
+h2{font-size:24px;font-weight:700;margin-bottom:6px}
+h3{font-size:18px;font-weight:500}
+p{margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch;margin-top:10px}
+.skyline{display:block;width:100%;max-width:100%;height:auto;margin:18px 0 8px;color:var(--gulf)}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 24px;border-bottom:2px solid var(--line)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 14px;font:600 15px "Instrument Sans",system-ui,sans-serif;color:var(--muted);cursor:pointer}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gulf)}
+nav button:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--dune);outline-offset:2px}
+section[hidden]{display:none}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+.chip{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:999px;padding:6px 12px;font:500 14px "Instrument Sans",system-ui,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--gulf);color:var(--gulf-ink);border-color:var(--gulf)}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:14px}
+.links a{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.links a strong{display:block;font-weight:600}
+.links a span{color:var(--muted);font-size:14px}
+.links a:hover{border-color:var(--gulf)}
+label{display:block;font-weight:600;font-size:14px;margin:10px 0 6px}
+input,textarea,select{width:100%;font:15px/1.5 "Instrument Sans",system-ui,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:170px;resize:vertical}
+.btn{border:0;border-radius:8px;padding:10px 16px;font:600 15px "Instrument Sans",system-ui,sans-serif;cursor:pointer;background:var(--gulf);color:var(--gulf-ink);text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--warn);border:1px solid var(--line)}
+.btn:disabled{opacity:.55;cursor:default}
+.status{color:var(--muted);font-size:14px;min-height:1.5em;margin-top:8px}
+.job{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;background:var(--surface)}
+.job-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.score{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;font-size:30px;line-height:1}
+.score small{font-size:13px;font-weight:500;color:var(--muted);display:block;text-align:right}
+.hi{color:var(--palm)} .mid{color:var(--dune)} .lo{color:var(--warn)}
+.meta{color:var(--muted);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.tag{font-size:13px;border-radius:6px;padding:2px 8px;background:var(--chip)}
+.tag.gap{border:1px dashed var(--warn);background:transparent}
+details summary{cursor:pointer;color:var(--gulf);font-weight:600;font-size:14px;margin-top:6px}
+.draft{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+td a{color:var(--gulf)}
+.empty{color:var(--muted);text-align:center;padding:28px 10px}
+.note{font-size:14px;color:var(--muted);border-left:3px solid var(--dune);padding-left:10px;margin-top:12px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.filters select{width:auto}
+@media (prefers-reduced-motion:no-preference){.job{animation:in .25s ease-out}@keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Divya’s UAE job hunt</h1>
+    <p class="lede">Find .NET, Python, Angular and AI roles in Abu Dhabi and Dubai, let Claude read each posting against your resume, and send a tailored email from Gmail.</p>
+    <svg class="skyline" viewBox="0 0 900 60" aria-hidden="true" preserveAspectRatio="none">
+      <path fill="currentColor" opacity=".18" d="M0 60V44h40v-8h18v8h30V30h14v14h26V20l10-8 10 8v24h34V36h20v8h40V26h10V14h6v12h10v18h40V40l12-10 12 10v4h36V24h22v20h30V8h4V2h4v6h4v36h30V34h24v10h44V28h16v16h38V18l14-6 14 6v26h32V38h22v6h40V30h18v14h36V22h12v22h40V36h26v8h44V26h18v18h38V60z"/>
+    </svg>
+  </header>
+
+  <nav role="tablist" aria-label="Sections">
+    <button role="tab" aria-selected="true" data-tab="find">Find openings</button>
+    <button role="tab" aria-selected="false" data-tab="add">Read a posting</button>
+    <button role="tab" aria-selected="false" data-tab="pipeline">My pipeline <span id="jobCount"></span></button>
+    <button role="tab" aria-selected="false" data-tab="contacts">HR contacts <span id="ctCount"></span></button>
+  </nav>
+
+  <!-- FIND -->
+  <section id="tab-find">
+    <div class="panel">
+      <h2>Search live openings</h2>
+      <p class="meta">Pick a role and city. Each link opens a live, current search in a new tab.</p>
+      <label>Role</label>
+      <div class="chips" id="roleChips"></div>
+      <label>City</label>
+      <div class="chips" id="cityChips"></div>
+      <div class="links" id="searchLinks"></div>
+      <p class="note">The “HR email in posting” search finds ads that list an application email. Copy any posting you like, then paste it into “Read a posting”.</p>
+    </div>
+    <div class="panel">
+      <h2>Employers worth checking directly</h2>
+      <p class="meta">Many government-linked and large UAE employers post only on their own careers pages.</p>
+      <div class="links" id="employerLinks"></div>
+    </div>
+  </section>
+
+  <!-- ADD -->
+  <section id="tab-add" hidden>
+    <div class="panel">
+      <h2>Read a job posting</h2>
+      <p class="meta">Paste the full posting text. Claude pulls out the company, role and any recruiter email it lists, then scores the fit against your resume.</p>
+      <label for="postUrl">Posting link (optional)</label>
+      <input id="postUrl" type="url" placeholder="https://www.linkedin.com/jobs/view/…">
+      <label for="postText">Posting text</label>
+      <textarea id="postText" placeholder="Paste the job description here…"></textarea>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="analyzeBtn">Read and score posting</button>
+        <button class="btn ghost" id="manualBtn">Add without AI</button>
+      </div>
+      <div class="status" id="analyzeStatus" role="status"></div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section id="tab-pipeline" hidden>
+    <div class="filters">
+      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option></select>
+      <select id="fCity" aria-label="Filter by city"><option value="">All cities</option><option>Abu Dhabi</option><option>Dubai</option></select>
+      <select id="fSort" aria-label="Sort"><option value="new">Newest first</option><option value="score">Best match first</option><option value="follow">Follow-up due</option></select>
+    </div>
+    <div id="jobList"></div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="tab-contacts" hidden>
+    <div class="panel">
+      <h2>HR and recruiter contacts</h2>
+      <p class="meta">Contacts are added automatically when a posting lists one, or you can add people you find on LinkedIn.</p>
+      <div class="row" style="align-items:flex-end">
+        <div style="flex:1 1 160px"><label for="cName">Name</label><input id="cName"></div>
+        <div style="flex:1 1 160px"><label for="cCompany">Company or agency</label><input id="cCompany"></div>
+        <div style="flex:1 1 200px"><label for="cEmail">Email</label><input id="cEmail" type="email"></div>
+        <div style="flex:1 1 120px"><label for="cCity">City</label><select id="cCity"><option>Abu Dhabi</option><option>Dubai</option><option>UAE</option></select></div>
+        <button class="btn" id="addContact">Add contact</button>
+      </div>
+      <div class="status" id="ctStatus" role="status"></div>
+    </div>
+    <div class="filters">
+      <select id="fCtCity" aria-label="Filter contacts by city"><option value="">All cities</option><option>Abu Dhabi</option><option>Dubai</option><option>UAE</option></select>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Name</th><th>Company</th><th>Email</th><th>City</th><th>Source</th><th></th></tr></thead>
+      <tbody id="ctBody"></tbody>
+    </table></div>
+  </section>
+</div>
+
+<script>
+const RESUME = `DIVYA SUNIL — Full Stack Developer (.NET | Python | Angular | AI Engineer | Automation). Abu Dhabi, UAE. +971 54 476 8544, divyaindu13@gmail.com, linkedin.com/in/divyasunil-43842599.
+10+ years. Skills: .NET/ASP.NET/C#/Blazor, Python, Java/Spring Boot, Angular 2–15, React, JavaScript/TypeScript; MS SQL Server, Power BI, Elasticsearch, REST APIs; Jenkins, CI/CD, Git, TFS, SVN, UCD; AI-driven automation, Agile/Scrum, cloud & on-prem integration.
+Senior Software Engineer, CyberGate Defence, Abu Dhabi (Jan 2024–present): internal enterprise apps in .NET and React; AI-driven automation in Python; organization-wide Power BI reporting; client dashboards and portals; Elasticsearch administration; CI/CD; API and data integration; leads technical initiatives.
+Python Developer, Inmakes Infotech, UAE (May–Dec 2023): Python automation, data processing, Git.
+Technology Lead, Infosys, India (Jan 2022–Aug 2023): led Java/Spring Boot/Angular enterprise apps, US clients, REST APIs, code reviews, mentoring, planning, Agile.
+Associate Team Lead, Elementz IT Solutions, Kochi (Nov 2020–Dec 2021): AML monitor, trade financing, warehouse management; .NET, Angular, MS SQL, C#, MVC, Azure, Jenkins.
+Associate Consultant, Capgemini, Bangalore (Apr 2018–Jan 2020): Royal Bank of Canada wealth management systems (Compass, CoMS, TRS); ASP.NET MVC, C#, SQL, SSRS, Angular 6, .NET Core.
+Software Engineer, Clarity IT, Bangalore (Jan 2015–Mar 2018): risk management system for ICON plc; Angular 2, TypeScript, VB.NET, PHP.
+B.Tech Computer Science, University of Kerala (2014). Certifications: Oracle Certified Associate Java, Microsoft .NET Core Fundamentals, Advanced Python Automation Engineering, IBM Python 101 for Data Science. Languages: English, Malayalam, Hindi, Tamil.`;
+
+const ROLES = [".NET Developer","Full Stack Developer","Python Developer","AI Engineer","Angular Developer","Power BI Developer","Senior Software Engineer","Technical Lead"];
+const CITIES = ["Abu Dhabi","Dubai"];
+const STATUSES = ["Saved","Applied","Interview","Offer","Rejected"];
+const EMPLOYERS = [
+  ["G42","Abu Dhabi · AI","https://www.g42.ai/careers"],
+  ["Presight","Abu Dhabi · AI & analytics","https://www.presight.ai/careers"],
+  ["Core42","Abu Dhabi · cloud & AI","https://www.core42.ai/careers"],
+  ["Technology Innovation Institute","Abu Dhabi · research","https://www.tii.ae/careers"],
+  ["EDGE Group","Abu Dhabi · defence tech","https://edgegroup.ae/careers"],
+  ["ADNOC","Abu Dhabi · energy & digital","https://www.adnoc.ae/en/careers"],
+  ["First Abu Dhabi Bank","Abu Dhabi · banking","https://www.bankfab.com/en-ae/about-fab/careers"],
+  ["Aldar","Abu Dhabi · real estate","https://www.aldar.com/en/careers"],
+  ["e&","Abu Dhabi & Dubai · telecom","https://www.eand.com/en/careers.html"],
+  ["Emirates NBD","Dubai · banking","https://www.emiratesnbd.com/en/careers"],
+  ["Careem","Dubai · tech","https://www.careem.com/en-AE/careers/"],
+  ["Majid Al Futtaim","Dubai · retail & tech","https://www.majidalfuttaim.com/en/careers"]
+];
+
+let role = ROLES[0], city = CITIES[0];
+let jobs = [], contacts = [];
+let store = null;      // {saveJob, delJob, saveCt, delCt}
+let sample = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const enc = encodeURIComponent;
+
+/* ---------- tabs ---------- */
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav button").forEach(x => x.setAttribute("aria-selected", x === b));
+  document.querySelectorAll("section").forEach(s => s.hidden = s.id !== "tab-" + b.dataset.tab);
+});
+function goTab(t){ document.querySelector(`nav button[data-tab="${t}"]`).click(); }
+
+/* ---------- find ---------- */
+function chips(el, list, get, set){
+  el.innerHTML = "";
+  list.forEach(v => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = v; b.setAttribute("aria-pressed", v === get());
+    b.onclick = () => { set(v); renderFind(); };
+    el.appendChild(b);
+  });
+}
+function renderFind(){
+  chips($("#roleChips"), ROLES, () => role, v => role = v);
+  chips($("#cityChips"), CITIES, () => city, v => city = v);
+  const q = `${role} ${city}`;
+  const links = [
+    ["LinkedIn Jobs", "Posted in the past week", `https://www.linkedin.com/jobs/search/?keywords=${enc(role)}&location=${enc(city + ", United Arab Emirates")}&f_TPR=r604800`],
+    ["Indeed UAE", "Newest first", `https://ae.indeed.com/jobs?q=${enc(role)}&l=${enc(city)}&sort=date`],
+    ["Google Jobs", "Combines Bayt, NaukriGulf, GulfTalent and more", `https://www.google.com/search?q=${enc(role + " jobs in " + city)}&ibp=htl;jobs`],
+    ["HR email in posting", "Ads that list an application email", `https://www.google.com/search?q=${enc(`"${role}" "${city}" ("send your CV" OR "send your resume" OR "email your CV")`)}&tbs=qdr:m`],
+    ["Bayt", "UAE’s largest job board", `https://www.google.com/search?q=${enc("site:bayt.com " + q)}&tbs=qdr:m`],
+    ["Recruiters on LinkedIn", "Tech recruiters in " + city, `https://www.linkedin.com/search/results/people/?keywords=${enc("IT recruiter " + city)}`]
+  ];
+  $("#searchLinks").innerHTML = links.map(([t,d,u]) => `<a href="${esc(u)}" target="_blank" rel="noopener"><strong>${esc(t)}</strong><span>${esc(d)}</span></a>`).join("");
+}
+$("#employerLinks").innerHTML = EMPLOYERS.map(([n,d,u]) => `<a href="${esc(u)}" target="_blank" rel="noopener"><strong>${esc(n)}</strong><span>${esc(d)}</span></a>`).join("");
+renderFind();
+
+/* ---------- storage ---------- */
+function localStore(){
+  const K = "divya-jobhunt-v1";
+  try { const d = JSON.parse(localStorage.getItem(K) || "{}"); jobs = d.jobs || []; contacts = d.contacts || []; } catch(e){}
+  const persist = () => { try { localStorage.setItem(K, JSON.stringify({jobs, contacts})); } catch(e){} renderAll(); };
+  return {
+    saveJob: async j => { const i = jobs.findIndex(x => x.id === j.id); i >= 0 ? jobs[i] = j : jobs.push(j); persist(); },
+    delJob: async id => { jobs = jobs.filter(x => x.id !== id); persist(); },
+    saveCt: async c => { const i = contacts.findIndex(x => x.id === c.id); i >= 0 ? contacts[i] = c : contacts.push(c); persist(); },
+    delCt: async id => { contacts = contacts.filter(x => x.id !== id); persist(); }
+  };
+}
+store = localStore(); renderAll();
+
+(async () => {
+  try {
+    const db = await claude.use("db");
+    const user = await claude.use("user");
+    if (db && user) {
+      const me = await user.id();
+      const base = db.doc("data/users/" + me + "/profile");
+      const jc = base.collection("jobs"), cc = base.collection("contacts");
+      jc.onSnapshot(s => { jobs = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); }, () => {});
+      cc.onSnapshot(s => { contacts = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); }, () => {});
+      const strip = o => { const { id, ...rest } = o; return rest; };
+      store = {
+        saveJob: j => jc.doc(j.id).set(strip(j)),
+        delJob: id => jc.doc(id).delete(),
+        saveCt: c => cc.doc(c.id).set(strip(c)),
+        delCt: id => cc.doc(id).delete()
+      };
+    }
+  } catch(e){ /* stay on local storage */ }
+})();
+
+(async () => {
+  try { sample = await claude.use("sample"); } catch(e){ sample = null; }
+  if (!sample) {
+    $("#analyzeBtn").disabled = true;
+    $("#analyzeStatus").textContent = "AI reading isn’t available in this view. Use “Add without AI” instead.";
+  }
+})();
+
+/* ---------- analyze ---------- */
+function sampleError(e){
+  if (e && e.code === "not_granted") return "Claude wasn’t allowed to run. Allow it when asked, or add the posting without AI.";
+  if (e && e.code === "rate_limited") return "Too many requests right now. Wait a minute, then try again.";
+  return "Couldn’t read the posting. Try again, or add it without AI.";
+}
+$("#analyzeBtn").onclick = async () => {
+  const text = $("#postText").value.trim();
+  if (text.length < 80) { $("#analyzeStatus").textContent = "Paste the full job description first (at least a few lines)."; return; }
+  const btn = $("#analyzeBtn"); btn.disabled = true;
+  $("#analyzeStatus").textContent = "Reading the posting and comparing it with your resume…";
+  try {
+    const r = await sample.json(
+`You are a careful career assistant for a job seeker in the UAE. Compare the JOB POSTING with the RESUME.
+Return ONLY a JSON object, no markdown, with these keys:
+"company" (string, "" if not stated), "role" (string), "city" ("Abu Dhabi", "Dubai", or another city name, "" if unknown),
+"contact_name" (string, "" if none), "contact_email" (string — ONLY an email address literally written in the posting; never guess or construct one; "" if none),
+"salary" (string, "" if not stated), "experience_required" (string),
+"score" (integer 0-100 for how well the resume fits the must-have requirements),
+"matched" (array of up to 8 short skill phrases the resume clearly covers),
+"gaps" (array of up to 5 short requirements the resume does not show),
+"summary" (one sentence on why this is or isn't a strong fit).
+
+RESUME:
+${RESUME}
+
+JOB POSTING:
+${text.slice(0, 12000)}`, { modelTier: "default" });
+    const job = {
+      id: uid(), created: new Date().toISOString(), status: "Saved", followUp: "",
+      url: $("#postUrl").value.trim(), posting: text.slice(0, 15000),
+      company: r.company || "", role: r.role || "Untitled role", city: r.city || "",
+      contactName: r.contact_name || "", contactEmail: (r.contact_email || "").trim(),
+      salary: r.salary || "", experience: r.experience_required || "",
+      score: Math.max(0, Math.min(100, parseInt(r.score) || 0)),
+      matched: Array.isArray(r.matched) ? r.matched : [], gaps: Array.isArray(r.gaps) ? r.gaps : [],
+      summary: r.summary || "", draftSubject: "", draftBody: ""
+    };
+    if (job.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(job.contactEmail)) job.contactEmail = "";
+    if (job.contactEmail && !text.toLowerCase().includes(job.contactEmail.toLowerCase())) job.contactEmail = "";
+    await store.saveJob(job);
+    if (job.contactEmail && !contacts.some(c => c.email.toLowerCase() === job.contactEmail.toLowerCase())) {
+      await store.saveCt({ id: uid(), name: job.contactName, company: job.company, email: job.contactEmail, city: job.city || "UAE", source: "Job posting: " + job.role });
+    }
+    $("#postText").value = ""; $("#postUrl").value = "";
+    $("#analyzeStatus").textContent = `Saved “${job.role}” at ${job.company || "unknown company"} with a ${job.score}% match.`;
+    goTab("pipeline");
+  } catch(e) {
+    $("#analyzeStatus").textContent = sampleError(e);
+  } finally { btn.disabled = !sample; }
+};
+
+$("#manualBtn").onclick = async () => {
+  const text = $("#postText").value.trim();
+  const email = (text.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/) || [""])[0];
+  const job = { id: uid(), created: new Date().toISOString(), status: "Saved", followUp: "", url: $("#postUrl").value.trim(),
+    posting: text.slice(0,15000), company: "", role: (text.split("\n")[0] || "New role").slice(0,80), city: "", contactName: "", contactEmail: email,
+    salary: "", experience: "", score: null, matched: [], gaps: [], summary: "", draftSubject: "", draftBody: "" };
+  await store.saveJob(job);
+  $("#postText").value = ""; $("#postUrl").value = "";
+  $("#analyzeStatus").textContent = "Saved. Fill in the details in your pipeline.";
+  goTab("pipeline");
+};
+
+/* ---------- pipeline ---------- */
+$("#fStatus").innerHTML += STATUSES.map(s => `<option>${s}</option>`).join("");
+["#fStatus","#fCity","#fSort","#fCtCity"].forEach(s => $(s).onchange = renderAll);
+
+function scoreClass(s){ return s >= 75 ? "hi" : s >= 50 ? "mid" : "lo"; }
+function gmailUrl(j){
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${enc(j.contactEmail || "")}&su=${enc(j.draftSubject || "")}&body=${enc(j.draftBody || "")}`;
+}
+function renderJobs(){
+  const fs = $("#fStatus").value, fc = $("#fCity").value, sort = $("#fSort").value;
+  let list = jobs.filter(j => (!fs || j.status === fs) && (!fc || (j.city || "").toLowerCase().includes(fc.toLowerCase())));
+  if (sort === "score") list.sort((a,b) => (b.score ?? -1) - (a.score ?? -1));
+  else if (sort === "follow") list.sort((a,b) => (a.followUp || "9999").localeCompare(b.followUp || "9999"));
+  else list.sort((a,b) => (b.created || "").localeCompare(a.created || ""));
+  $("#jobCount").textContent = jobs.length ? `(${jobs.length})` : "";
+  const el = $("#jobList");
+  if (!list.length) { el.innerHTML = `<div class="panel empty">${jobs.length ? "No roles match these filters." : "No roles yet. Search for openings, then paste a posting into “Read a posting”."}</div>`; return; }
+  el.innerHTML = list.map(j => `
+  <article class="job" data-id="${esc(j.id)}">
+    <div class="job-head">
+      <div style="flex:1 1 300px">
+        <h3>${esc(j.role)}</h3>
+        <div class="meta">${esc([j.company, j.city, j.salary, j.experience].filter(Boolean).join(", "))}</div>
+        ${j.summary ? `<p style="margin-top:6px">${esc(j.summary)}</p>` : ""}
+      </div>
+      ${j.score != null ? `<div class="score ${scoreClass(j.score)}">${j.score}%<small>match</small></div>` : ""}
+    </div>
+    ${j.matched.length || j.gaps.length ? `<div class="tags">${j.matched.map(m => `<span class="tag">${esc(m)}</span>`).join("")}${j.gaps.map(g => `<span class="tag gap" title="Not shown on your resume">${esc(g)}</span>`).join("")}</div>` : ""}
+    <div class="row">
+      <div style="flex:1 1 150px"><label>Status</label><select data-f="status">${STATUSES.map(s => `<option ${s===j.status?"selected":""}>${s}</option>`).join("")}</select></div>
+      <div style="flex:1 1 150px"><label>Follow up on</label><input type="date" data-f="followUp" value="${esc(j.followUp)}"></div>
+      <div style="flex:2 1 220px"><label>Recruiter email</label><input type="email" data-f="contactEmail" value="${esc(j.contactEmail)}" placeholder="Not listed in the posting"></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" data-act="draft" ${sample ? "" : "disabled"}>${j.draftBody ? "Rewrite email" : "Draft tailored email"}</button>
+      ${j.url ? `<a class="btn ghost" href="${esc(j.url)}" target="_blank" rel="noopener">Open posting</a>` : ""}
+      <button class="btn danger" data-act="del">Remove</button>
+    </div>
+    <div class="status" data-status role="status"></div>
+    ${j.draftBody || j.draftSubject ? `
+    <div class="draft">
+      <label>Subject</label><input data-f="draftSubject" value="${esc(j.draftSubject)}">
+      <label>Email</label><textarea data-f="draftBody">${esc(j.draftBody)}</textarea>
+      <div class="row" style="margin-top:10px">
+        <a class="btn" data-act="gmail" href="${esc(gmailUrl(j))}" target="_blank" rel="noopener">Open in Gmail</a>
+        <a class="btn ghost" href="mailto:${esc(j.contactEmail)}?subject=${enc(j.draftSubject)}&body=${enc(j.draftBody)}">Open in mail app</a>
+        <button class="btn ghost" data-act="copy">Copy email</button>
+      </div>
+      <p class="note">Attach your CV in Gmail before sending. Gmail links can’t attach files automatically.</p>
+    </div>` : ""}
+    ${j.posting ? `<details><summary>Show posting text</summary><p style="white-space:pre-wrap;font-size:14px;margin-top:8px">${esc(j.posting)}</p></details>` : ""}
+  </article>`).join("");
+}
+
+$("#jobList").addEventListener("change", async e => {
+  const f = e.target.dataset.f; if (!f) return;
+  const j = jobs.find(x => x.id === e.target.closest(".job").dataset.id); if (!j) return;
+  j[f] = e.target.value;
+  if (f === "status" && j.status === "Applied" && !j.followUp) {
+    const d = new Date(); d.setDate(d.getDate() + 7); j.followUp = d.toISOString().slice(0,10);
+  }
+  await store.saveJob(j);
+});
+
+$("#jobList").addEventListener("click", async e => {
+  const act = e.target.dataset.act; if (!act) return;
+  const card = e.target.closest(".job"); const j = jobs.find(x => x.id === card.dataset.id); if (!j) return;
+  const st = card.querySelector("[data-status]");
+  if (act === "del") { if (confirm(`Remove “${j.role}” from your pipeline?`)) await store.delJob(j.id); }
+  if (act === "copy") {
+    try { await navigator.clipboard.writeText(`Subject: ${j.draftSubject}\n\n${j.draftBody}`); st.textContent = "Email copied."; }
+    catch(err){ st.textContent = "Couldn’t copy. Select the text and copy it manually."; }
+  }
+  if (act === "gmail" && j.status === "Saved") { j.status = "Applied"; const d = new Date(); d.setDate(d.getDate()+7); j.followUp = j.followUp || d.toISOString().slice(0,10); await store.saveJob(j); }
+  if (act === "draft") {
+    e.target.disabled = true; st.textContent = "Writing your email…";
+    try {
+      const { text } = await sample(
+`Write a short, professional job application email from Divya Sunil for the role below. Use only facts from her resume; never invent achievements or numbers.
+- Address ${j.contactName ? j.contactName : "the hiring team"} politely.
+- 130–180 words. Open with the exact role and company. In 2–3 sentences connect her most relevant experience to the posting's top requirements${j.matched.length ? " (" + j.matched.slice(0,5).join(", ") + ")" : ""}.
+- Mention she is based in Abu Dhabi and available to interview. Say her CV is attached.
+- Close with her name, phone +971 54 476 8544, email divyaindu13@gmail.com and LinkedIn linkedin.com/in/divyasunil-43842599.
+Return exactly this format and nothing else:
+Subject: <subject line>
+
+<email body>
+
+RESUME:
+${RESUME}
+
+ROLE: ${j.role} at ${j.company || "the company"} (${j.city || "UAE"})
+POSTING:
+${(j.posting || "").slice(0, 8000)}`, { modelTier: "default", cache: false });
+      const m = text.match(/^\s*Subject:\s*(.+)\n([\s\S]*)$/i);
+      j.draftSubject = m ? m[1].trim() : `Application: ${j.role} – Divya Sunil`;
+      j.draftBody = (m ? m[2] : text).trim();
+      await store.saveJob(j);
+    } catch(err) { st.textContent = sampleError(err); e.target.disabled = false; }
+  }
+});
+
+/* ---------- contacts ---------- */
+$("#addContact").onclick = async () => {
+  const email = $("#cEmail").value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $("#ctStatus").textContent = "Enter a valid email address."; return; }
+  if (contacts.some(c => c.email.toLowerCase() === email.toLowerCase())) { $("#ctStatus").textContent = "That contact is already saved."; return; }
+  await store.saveCt({ id: uid(), name: $("#cName").value.trim(), company: $("#cCompany").value.trim(), email, city: $("#cCity").value, source: "Added by you" });
+  ["#cName","#cCompany","#cEmail"].forEach(s => $(s).value = "");
+  $("#ctStatus").textContent = "Contact added.";
+};
+function renderContacts(){
+  const fc = $("#fCtCity").value;
+  const list = contacts.filter(c => !fc || (c.city || "").toLowerCase().includes(fc.toLowerCase()));
+  $("#ctCount").textContent = contacts.length ? `(${contacts.length})` : "";
+  $("#ctBody").innerHTML = list.length ? list.map(c => `<tr>
+    <td>${esc(c.name || "–")}</td><td>${esc(c.company || "–")}</td>
+    <td><a href="https://mail.google.com/mail/?view=cm&fs=1&to=${enc(c.email)}" target="_blank" rel="noopener">${esc(c.email)}</a></td>
+    <td>${esc(c.city || "")}</td><td class="meta">${esc(c.source || "")}</td>
+    <td><button class="btn danger" data-ct="${esc(c.id)}" style="padding:4px 10px;font-size:13px">Remove</button></td></tr>`).join("")
+    : `<tr><td colspan="6" class="empty">No contacts yet. They appear here when a posting lists a recruiter email.</td></tr>`;
+}
+$("#ctBody").addEventListener("click", async e => { const id = e.target.dataset.ct; if (id) await store.delCt(id); });
+
+function renderAll(){ renderJobs(); renderContacts(); }
+</script>
+</body>
+</html>
